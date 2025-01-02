@@ -1,0 +1,23 @@
+<nav class="bg-gray-800 text-white">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <a routerLink="/" class="flex items-center space-x-2">
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+            />
+          </svg>
+          <span class="text-xl font-bold">Anachid</span>
+        </a>
+      </div>
+
+      <button
+        (click)="openUploadModal()"
+        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+      >
+        Upload Track
+      </button>
+    </div>
+  </div>
+</nav>
