@@ -1,49 +1,118 @@
-<div class="space-y-6">
-  <div class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold text-gray-900">Your Library</h1>
-    <button
-      (click)="openUploadModal()"
-      class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-    >
-      Upload Track
-    </button>
+<div
+  class="w-full grid min-h-screen bg-gradient-to-t from-blue-200 to-indigo-900 p-5"
+>
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-200">
+      Made for you
+    </h1>
   </div>
 
-  <!-- Categories -->
-  <div class="flex space-x-2 overflow-x-auto pb-2">
-    <button
-      (click)="onCategoryChange('all')"
-      [class.bg-blue-500]="selectedCategory === 'all'"
-      [class.text-white]="selectedCategory === 'all'"
-      class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
-    >
-      All
-    </button>
-    @for (category of categories; track category) {
-    <button
-      (click)="onCategoryChange(category)"
-      [class.bg-blue-500]="selectedCategory === category"
-      [class.text-white]="selectedCategory === category"
-      class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
-    >
-      {{ category }}
-    </button>
-    }
+  <!-- Categories and Search -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex space-x-2 overflow-x-auto">
+      <button
+        (click)="onCategoryChange('all')"
+        [class.bg-blue-500]="selectedCategory === 'all'"
+        [class.text-white]="selectedCategory === 'all'"
+        class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors text-gray-200"
+      >
+        All
+      </button>
+      @for (category of categories; track category) {
+      <button
+        (click)="onCategoryChange(category)"
+        [class.bg-blue-500]="selectedCategory === category"
+        [class.text-white]="selectedCategory === category"
+        class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors text-gray-200"
+      >
+        {{ category }}
+      </button>
+      }
+    </div>
+    <app-search-track
+      (search)="onSearch($event)"
+      class="w-64"
+    ></app-search-track>
   </div>
-
-  <!-- Search -->
-  <app-search-track (search)="onSearch($event)"></app-search-track>
 
   <!-- Tracks Grid -->
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+  <section
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
   >
     @if (filteredTracks.length) { @for (track of filteredTracks; track track.id)
     {
-    <app-track-card [track]="track"></app-track-card>
+    <div class="bg-gray-900 shadow-lg rounded p-2">
+      <div class="group relative">
+        <img
+          [src]="track.imageUrl || 'assets/default-album.png'"
+          [alt]="track.title"
+          class="w-full block rounded aspect-square object-cover"
+        />
+        <div
+          class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly"
+        >
+          <button
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="bi bi-heart"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+              />
+            </svg>
+          </button>
+
+          <button
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+            (click)="playTrack(track)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              fill="currentColor"
+              class="bi bi-play-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
+              />
+            </svg>
+          </button>
+
+          <button
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+            [routerLink]="['/tracks', track.id]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="bi bi-three-dots"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-3">
+        <h3 class="text-white text-base truncate">{{ track.title }}</h3>
+        <p class="text-gray-400 text-sm truncate">{{ track.artist }}</p>
+      </div>
+    </div>
     } } @else {
     <div class="col-span-full text-center py-12">
-      <p class="text-gray-500">No tracks found in your library</p>
+      <p class="text-gray-200">No tracks found in your library</p>
       <button
         (click)="openUploadModal()"
         class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
@@ -52,5 +121,5 @@
       </button>
     </div>
     }
-  </div>
+  </section>
 </div>

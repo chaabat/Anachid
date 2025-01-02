@@ -2,19 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
 import { AudioVolumeComponent } from '../audio-volume/audio-volume.component';
-
 import { AudioService } from '../../../services/audio.service';
 import { Track, PlayerStatus } from '../../../models/audio.models';
 import { take } from 'rxjs/operators';
-
-import { Track, PlayerStatus } from '../../../models/audio.models';
-
 
 @Component({
   selector: 'app-audio-player',
   standalone: true,
   imports: [CommonModule, AudioControlsComponent, AudioVolumeComponent],
-
   template: `
     <div class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white">
       @if (currentTrack$ | async; as track) {
@@ -106,33 +101,5 @@ export class AudioPlayerComponent implements OnInit {
 
   onPrevious() {
     this.audioService.playPrevious();
-
-})
-export class AudioPlayerComponent implements OnInit {
-  currentTrack: Track | null = null;
-  playerStatus: PlayerStatus = PlayerStatus.STOPPED;
-  currentTime: number = 0;
-  duration: number = 0;
-  volume: number = 1;
-
-  ngOnInit() {
-    // Initialize audio player
-  }
-
-  onPlayPause() {
-    if (this.playerStatus === PlayerStatus.PLAYING) {
-      this.playerStatus = PlayerStatus.PAUSED;
-    } else {
-      this.playerStatus = PlayerStatus.PLAYING;
-    }
-  }
-
-  onVolumeChange(volume: number) {
-    this.volume = volume;
-  }
-
-  onTimeUpdate(time: number) {
-    this.currentTime = time;
-
   }
 }

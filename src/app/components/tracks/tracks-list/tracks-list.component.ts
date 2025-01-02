@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SearchTrackComponent } from '../search-track/search-track.component';
-import { TrackCardComponent } from '../track-card/track-card.component';
 import { Track, MusicCategory } from '../../../models/audio.models';
 import { ModalService } from '../../../services/modal.service';
 import { AudioManagerService } from '../../../services/audio-manager.service';
+import { AudioService } from '../../../services/audio.service';
 
 @Component({
   selector: 'app-tracks-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, SearchTrackComponent, TrackCardComponent],
+  imports: [CommonModule, RouterLink, SearchTrackComponent],
   templateUrl: './tracks-list.component.html',
 })
 export class TracksListComponent implements OnInit {
@@ -22,7 +22,8 @@ export class TracksListComponent implements OnInit {
 
   constructor(
     private modalService: ModalService,
-    private audioManager: AudioManagerService
+    private audioManager: AudioManagerService,
+    private audioService: AudioService
   ) {}
 
   ngOnInit() {
@@ -36,6 +37,10 @@ export class TracksListComponent implements OnInit {
 
   async loadTracks() {
     await this.audioManager.getAllTracks();
+  }
+
+  playTrack(track: Track) {
+    this.audioService.playTrack(track);
   }
 
   filterTracks() {
