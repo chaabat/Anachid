@@ -6,6 +6,7 @@ import { PlayerStatus } from '../../../models/audio.models';
   selector: 'app-audio-controls',
   standalone: true,
   imports: [CommonModule],
+
   template: `
     <div class="flex items-center space-x-4">
       <button
@@ -38,7 +39,11 @@ import { PlayerStatus } from '../../../models/audio.models';
         </svg>
       </button>
     </div>
-  `,
+  `
+
+
+
+
 })
 export class AudioControlsComponent {
   @Input() status: PlayerStatus = PlayerStatus.STOPPED;

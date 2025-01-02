@@ -6,10 +6,13 @@ export interface Track {
   addedDate: Date;
   duration: number;
   category: MusicCategory;
+
   format: AudioFormat;
   size: number;
   imageUrl?: string;
   audioUrl?: string;
+
+
 }
 
 export enum MusicCategory {
@@ -21,6 +24,18 @@ export enum MusicCategory {
   CLASSICAL = 'classical',
   OTHER = 'other',
 }
+
+
+export interface PlayerState {
+  currentTrack: Track | null;
+  status: PlayerStatus;
+  volume: number;
+  currentTime: number;
+  isLooping: boolean;
+  isShuffling: boolean;
+  playlist: Track[];
+}
+
 
 export enum PlayerStatus {
   PLAYING = 'playing',
@@ -43,3 +58,4 @@ export const ALLOWED_AUDIO_FORMATS = [
   'audio/vorbis',
 ];
 export const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB in bytes
+
