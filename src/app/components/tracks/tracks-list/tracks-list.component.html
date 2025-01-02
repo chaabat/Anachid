@@ -1,6 +1,12 @@
 <div class="space-y-6">
   <div class="flex justify-between items-center">
     <h1 class="text-3xl font-bold text-gray-900">Your Library</h1>
+    <button
+      (click)="openUploadModal()"
+      class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+    >
+      Upload Track
+    </button>
   </div>
 
   <!-- Categories -->
@@ -26,7 +32,7 @@
   </div>
 
   <!-- Search -->
-  <app-search-track></app-search-track>
+  <app-search-track (search)="onSearch($event)"></app-search-track>
 
   <!-- Tracks Grid -->
   <div
