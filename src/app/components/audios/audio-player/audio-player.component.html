@@ -1,1 +1,30 @@
-<p>audio-player works!</p>
+<div class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4">
+  <div class="container mx-auto flex items-center justify-between">
+    <!-- Track Info -->
+    <div class="flex items-center space-x-4">
+      <img
+        [src]="currentTrack?.imageUrl || 'assets/default-album.png'"
+        class="w-12 h-12 rounded"
+        alt="Album cover"
+      />
+      <div>
+        <h3 class="font-medium">
+          {{ currentTrack?.title || "No track selected" }}
+        </h3>
+        <p class="text-sm text-gray-400">{{ currentTrack?.artist }}</p>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <app-audio-controls
+      [status]="playerStatus"
+      (playPause)="onPlayPause()"
+    ></app-audio-controls>
+
+    <!-- Volume -->
+    <app-audio-volume
+      [volume]="volume"
+      (volumeChange)="onVolumeChange($event)"
+    ></app-audio-volume>
+  </div>
+</div>
