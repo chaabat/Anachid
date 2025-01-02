@@ -1,0 +1,152 @@
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Upload Track</h2>
+      <button (click)="close()" class="text-gray-500 hover:text-gray-700">
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-4">
+      <!-- File Input -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700"
+          >Audio File</label
+        >
+        <input
+          type="file"
+          accept="audio/mp3,audio/mpeg,audio/wav,audio/wave,audio/ogg,audio/vorbis"
+          (change)="onFileSelected($event)"
+          class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        />
+      </div>
+
+      <!-- Cover Image -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700"
+          >Cover Image</label
+        >
+        <div class="mt-1 flex items-center space-x-4">
+          <div class="w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
+            @if (imagePreview) {
+            <img [src]="imagePreview" class="w-full h-full object-cover" />
+            } @else {
+            <div
+              class="w-full h-full flex items-center justify-center text-gray-400"
+            >
+              <svg
+                class="w-12 h-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            }
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="hidden"
+            #imageInput
+          />
+          <button
+            type="button"
+            (click)="imageInput.click()"
+            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Choose Image
+          </button>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Title</label>
+        <input
+          type="text"
+          [(ngModel)]="metadata.title"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Artist -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Artist</label>
+        <input
+          type="text"
+          [(ngModel)]="metadata.artist"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Category -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Category</label>
+        <select
+          [(ngModel)]="metadata.category"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        >
+          <option value="POP">Pop</option>
+          <option value="ROCK">Rock</option>
+          <option value="RAP">Rap</option>
+          <option value="CHAABI">Chaabi</option>
+          <option value="JAZZ">Jazz</option>
+          <option value="CLASSICAL">Classical</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700"
+          >Description</label
+        >
+        <textarea
+          [(ngModel)]="metadata.description"
+          rows="3"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        ></textarea>
+      </div>
+
+      <!-- Error Message -->
+      @if (error) {
+      <p class="text-red-500 text-sm">{{ error }}</p>
+      }
+
+      <!-- Submit Button -->
+      <button
+        (click)="onUpload()"
+        [disabled]="isUploading"
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+      >
+        @if (isUploading) {
+        <span>Uploading...</span>
+        } @else {
+        <span>Upload Track</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
