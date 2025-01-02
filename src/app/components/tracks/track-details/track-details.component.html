@@ -1,110 +1,122 @@
 <div class="container mx-auto px-4 py-8">
-    @if (track) {
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-      <div class="relative h-64">
-        <img
-          [src]="track.imageUrl || 'assets/default-album.png'"
-          [alt]="track.title"
-          class="w-full h-full object-cover"
-        />
-        @if (isEditing) {
-        <div class="absolute top-4 right-4">
-          <input
-            type="file"
-            accept="image/*"
-            (change)="onImageSelected($event)"
-            class="hidden"
-            #imageInput
-          />
-          <button
-            (click)="imageInput.click()"
-            class="px-3 py-1 bg-white text-gray-700 rounded-md shadow text-sm"
-          >
-            Change Image
-          </button>
-        </div>
-        }
-      </div>
-      <div class="p-6">
-        @if (isEditing) {
+  @if (track) {
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="relative h-64">
+      <img
+        [src]="track.imageUrl || 'assets/default-album.png'"
+        [alt]="track.title"
+        class="w-full h-full object-cover"
+      />
+      @if (isEditing) {
+      <div class="absolute top-4 right-4">
         <input
-          [(ngModel)]="editedTrack.title"
-          class="text-3xl font-bold mb-2 w-full border-b border-gray-300 focus:outline-none focus:border-blue-500"
+          type="file"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          class="hidden"
+          #imageInput
         />
-        <input
-          [(ngModel)]="editedTrack.artist"
-          class="text-gray-600 text-lg mb-4 w-full border-b border-gray-300 focus:outline-none focus:border-blue-500"
-        />
-        <select
-          [(ngModel)]="editedTrack.category"
-          class="w-full mb-4 p-2 border rounded focus:outline-none focus:border-blue-500"
+        <button
+          (click)="imageInput.click()"
+          class="px-3 py-1 bg-white text-gray-700 rounded-md shadow text-sm"
         >
-          @for (category of categories; track category) {
-          <option [value]="category">{{ category }}</option>
+          Change Image
+        </button>
+      </div>
+      }
+    </div>
+    <div class="p-6">
+      @if (isEditing) {
+      <input
+        [(ngModel)]="editedTrack.title"
+        class="text-3xl font-bold mb-2 w-full border-b border-gray-300 focus:outline-none focus:border-blue-500"
+      />
+      <input
+        [(ngModel)]="editedTrack.artist"
+        class="text-gray-600 text-lg mb-4 w-full border-b border-gray-300 focus:outline-none focus:border-blue-500"
+      />
+      <select
+        [(ngModel)]="editedTrack.category"
+        class="w-full mb-4 p-2 border rounded focus:outline-none focus:border-blue-500"
+      >
+        @for (category of categories; track category) {
+        <option [value]="category">{{ category }}</option>
+        }
+      </select>
+      <textarea
+        [(ngModel)]="editedTrack.description"
+        class="w-full h-24 p-2 border rounded focus:outline-none focus:border-blue-500"
+      ></textarea>
+      } @else {
+      <div class="flex items-center gap-4 mb-2">
+        <h1 class="text-3xl font-bold">{{ track.title }}</h1>
+        <button (click)="playTrack()">
+          <img
+            src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735829965/unqo1xtmgtevavps8qxe.png"
+            alt="play"
+            class="w-12 h-12"
+          />
+        </button>
+      </div>
+      <p class="text-gray-600 text-lg mb-4">{{ track.artist }}</p>
+      <p class="text-blue-500 mb-4">Category: {{ track.category }}</p>
+      @if (track.description) {
+      <p class="text-gray-700 mb-4">{{ track.description }}</p>
+      } }
+      <div class="flex items-center justify-between mt-4">
+        <span class="text-sm text-gray-500">
+          Added {{ track.addedDate | date }}
+        </span>
+        <div class="space-x-2">
+          @if (isEditing) {
+          <button
+            (click)="saveChanges()">
+            <img
+            src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735830209/c9zxgwzalnfoe7ed3wje.png"
+            alt="delete"
+            class="w-8 h-8"
+          />
+          </button>
+          <button
+            (click)="cancelEdit()">
+            <img
+            src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735830208/cikkdx9afh6obhhxxh6n.png"
+            alt="delete"
+            class="w-8 h-8"
+          />
+          </button>
+          } @else {
+          <button
+            (click)="startEdit()"> 
+            <img
+            src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735829675/nd6jkfot4tsnnm0qmdmi.png"
+            alt="edit"
+            class="w-8 h-8"
+          />
+         
+           
+          </button>
+          <button
+            (click)="deleteTrack()"
+            class="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <img
+              src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735829675/lrynakdstpw49whwryhf.png"
+              alt="delete"
+              class="w-8 h-8"
+            />
+          </button>
           }
-        </select>
-        <textarea
-          [(ngModel)]="editedTrack.description"
-          class="w-full h-24 p-2 border rounded focus:outline-none focus:border-blue-500"
-        ></textarea>
-        } @else {
-        <h1 class="text-3xl font-bold mb-2">{{ track.title }}</h1>
-        <p class="text-gray-600 text-lg mb-4">{{ track.artist }}</p>
-        <p class="text-blue-500 mb-4">Category: {{ track.category }}</p>
-        @if (track.description) {
-        <p class="text-gray-700 mb-4">{{ track.description }}</p>
-        } }
-        <div class="flex items-center justify-between mt-4">
-          <span class="text-sm text-gray-500">
-            Added {{ track.addedDate | date }}
-          </span>
-          <div class="space-x-2">
-            @if (isEditing) {
-            <button
-              (click)="saveChanges()"
-              class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              Save
-            </button>
-            <button
-              (click)="cancelEdit()"
-              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-            } @else {
-            <button
-              (click)="startEdit()"
-              class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Edit
-            </button>
-            <button
-              (click)="deleteTrack()"
-              class="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <img 
-                src="./delete.png" 
-                alt="delete" 
-                class="w-6 h-6"
-              />
-            </button>
-            }
-            <button
-              (click)="playTrack()"
-              class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-            >
-              Play Track
-            </button>
-          </div>
+ 
         </div>
-        <div class="mt-4">
-          <audio #audioPlayer class="w-full" controls>
-            <source [src]="audioUrl" type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
-        </div>
+      </div>
+      <div class="mt-4">
+        <audio #audioPlayer class="w-full" controls>
+          <source [src]="audioUrl" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
     </div>
-    }
   </div>
+  }
+</div>
