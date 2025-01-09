@@ -1,30 +1,76 @@
-<div class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4">
-  <div class="container mx-auto flex items-center justify-between">
-    <!-- Track Info -->
-    <div class="flex items-center space-x-4">
-      <img
-        [src]="currentTrack?.imageUrl || 'assets/default-album.png'"
-        class="w-12 h-12 rounded"
-        alt="Album cover"
-      />
-      <div>
-        <h3 class="font-medium">
-          {{ currentTrack?.title || "No track selected" }}
-        </h3>
-        <p class="text-sm text-gray-400">{{ currentTrack?.artist }}</p>
+<div class="fixed bottom-0 left-0 right-0 bg-[#1b4332] text-white font-mono">
+  @if (currentTrack$ | async; as track) {
+  <div class="container mx-auto px-4 py-3">
+    <!-- Progress Bar -->
+    <div class="w-full mb-2">
+      <div
+        class="relative h-1 bg-gray-700 rounded cursor-pointer"
+        (click)="onProgressBarClick($event)"
+      >
+        <div
+          class="absolute h-full bg-[#d8f3dc] rounded"
+          [style.width]="(currentTime / duration) * 100 + '%'"
+        ></div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>{{ formatTime(currentTime) }}</span>
+        <span>{{ formatTime(duration) }}</span>
       </div>
     </div>
 
-    <!-- Controls -->
-    <app-audio-controls
-      [status]="playerStatus"
-      (playPause)="onPlayPause()"
-    ></app-audio-controls>
+    <div class="flex items-center justify-between">
+      <!-- Track Info -->
+      <div class="flex items-center space-x-4">
+        <img
+          [src]="track.imageUrl || 'assets/default-album.png'"
+          class="w-12 h-12 rounded"
+          [alt]="track.title"
+        />
+        <div>
+          <h3 class="font-medium">{{ track.title }}</h3>
+          <p class="text-sm text-[#d8f3dc] font-mono">{{ track.artist }}</p>
+        </div>
+      </div>
 
-    <!-- Volume -->
-    <app-audio-volume
-      [volume]="volume"
-      (volumeChange)="onVolumeChange($event)"
-    ></app-audio-volume>
+      <!-- Controls -->
+      <div class="flex items-center space-x-4">
+        <button
+          class="p-2 hover:bg-gray-700 rounded-full"
+          (click)="onPrevious()"
+        >
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+          </svg>
+        </button>
+
+        <button
+          class="p-3 hover:bg-gray-700 rounded-full"
+          (click)="onPlayPause()"
+        >
+          @if ((status$ | async) === PlayerStatus.PLAYING) {
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+          } @else {
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          }
+        </button>
+
+        <button class="p-2 hover:bg-gray-700 rounded-full" (click)="onNext()">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Volume Control -->
+      <app-audio-volume
+        [volume]="volume"
+        (volumeChange)="onVolumeChange($event)"
+      ></app-audio-volume>
+    </div>
   </div>
+  }
 </div>

@@ -5,6 +5,7 @@ import { NavbarComponent } from './components/shared/navbar/navbar.component';
 import { AudioPlayerComponent } from './components/audios/audio-player/audio-player.component';
 import { UploadModalComponent } from './components/modals/upload-modal/upload-modal.component';
 import { ModalService } from './services/modal.service';
+import { FooterComponent } from './components/shared/footer/footer.component';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { ModalService } from './services/modal.service';
     NavbarComponent,
     AudioPlayerComponent,
     UploadModalComponent,
+    FooterComponent,
   ],
   templateUrl: './app.component.html',
 })

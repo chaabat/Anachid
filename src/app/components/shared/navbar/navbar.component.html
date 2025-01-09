@@ -1,23 +1,49 @@
-<nav class="bg-gray-800 text-white">
-  <div class="container mx-auto px-4">
-    <div class="flex items-center justify-between h-16">
-      <div class="flex items-center">
-        <a routerLink="/" class="flex items-center space-x-2">
-          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-            />
-          </svg>
-          <span class="text-xl font-bold">Anachid</span>
-        </a>
-      </div>
-
-      <button
-        (click)="openUploadModal()"
-        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-      >
-        Upload Track
-      </button>
+<nav
+  class="font-mono  bg-white flex flex-col text-center content-center sm:flex-row sm:text-left sm:justify-between py-2 px-6  shadow sm:items-baseline w-full"
+>
+  <!-- Logo and Brand Section -->
+  <div class="mb-2 sm:mb-0 flex flex-row">
+    <div class="h-[80px] w-[80px] self-center mr-2">
+      <img src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1736412642/p76nulicitgse2e4ah2a.png" alt="">
     </div>
+    <div>
+      <a
+        routerLink="/"
+        class="text-2xl no-underline text-grey-darkest hover:text-red-dark font-sans font-bold"
+        >Anachid</a
+      >
+      <br />
+      <span class="text-xs text-grey-dark font-mono">Islamic Audio Platform</span>
+    </div>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="sm:mb-0 self-center flex items-center space-x-4">
+    <a
+      routerLink="/tracks"
+      routerLinkActive="text-red-600"
+      class="text-md no-underline text-black font-mono"
+    >
+      Tracks
+    </a>
+    <a
+      routerLink="/favorites"
+      routerLinkActive="text-red-600"
+      class="text-md no-underline text-black font-mono"
+    >
+      Favorites
+    </a>
+
+    <button
+      (click)="openUploadModal()"
+      class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
+    >
+      <img
+        src="https://res.cloudinary.com/dlwyetxjd/image/upload/v1735831510/r9ybragkqlnycr9z5dow.png"
+        alt="upload"
+        class="w-6 h-6"
+      />
+      <span>Upload Track</span>
+    </button>
   </div>
 </nav>

@@ -1,13 +1,14 @@
-<div class="min-h-screen bg-gray-100 flex flex-col">
+<div class="h-full bg-gray-100 flex flex-col">
   <app-navbar></app-navbar>
 
-  <main class="flex-grow container mx-auto px-4 py-8">
+  <main class="flex-grow">
     <router-outlet></router-outlet>
   </main>
 
   <app-audio-player></app-audio-player>
-</div>
 
-@if (modalService.isOpen$ | async) {
-<app-upload-modal></app-upload-modal>
-}
+  @if(modalService.isOpen$ | async) {
+  <app-upload-modal></app-upload-modal>
+  }
+</div>
+<app-footer></app-footer>

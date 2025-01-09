@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-
 export const routes: Routes = [
   {
     path: '',
@@ -21,5 +20,11 @@ export const routes: Routes = [
         (m) => m.TrackDetailsComponent
       ),
   },
+  {
+    path: 'favorites',
+    loadComponent: () =>
+      import('./components/favorits/favorits.component').then(
+        (m) => m.FavoritsComponent
+      ),
+  },
 ];
-

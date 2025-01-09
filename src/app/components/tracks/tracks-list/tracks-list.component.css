@@ -1,0 +1,57 @@
+.perspective {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Add explicit rotation for the back face */
+.back-face {
+  transform: rotateY(180deg);
+}
+
+/* Ensure the card maintains its dimensions */
+.card-container {
+  min-height: 600px; /* Adjust this value based on your card's content */
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.sm\:grid-cols-2 {
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.lg\:grid-cols-4 {
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.gap-4 {
+  gap: 1rem;
+}

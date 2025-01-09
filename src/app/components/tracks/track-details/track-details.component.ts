@@ -2,9 +2,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Track, MusicCategory } from '../../../models/audio.models';
+import {
+  Track,
+  MusicCategory,
+  PlayerStatus,
+} from '../../../models/audio.models';
 import { AudioManagerService } from '../../../services/audio-manager.service';
 import { AudioService } from '../../../services/audio.service';
+import { take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../store/app.state';
+import * as AudioActions from '../../../store/audio/audio.actions';
 
 @Component({
   selector: 'app-track-details',
@@ -24,22 +32,24 @@ export class TrackDetailsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private audioManager: AudioManagerService,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this.loadTrack();
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.loadTrack(params['id']);
+      }
+    });
   }
 
-  async loadTrack() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
+  async loadTrack(id: string) {
+    try {
       this.track = await this.audioManager.getTrackById(id);
-      if (this.track) {
-        // Get audio blob and create URL
-        const audioBlob = await this.audioManager.getAudioFile(id);
-        this.audioUrl = URL.createObjectURL(audioBlob);
-      }
+      console.log('Loaded track:', this.track);
+    } catch (error) {
+      console.error('Error loading track:', error);
     }
   }
 
@@ -57,6 +67,15 @@ export class TrackDetailsComponent implements OnInit, OnDestroy {
 
   async saveChanges() {
     if (this.track && this.editedTrack) {
+      // Check if this track is currently playing
+      const currentTrack = await this.audioService.currentTrack$
+        .pipe(take(1))
+        .toPromise();
+      if (currentTrack?.id === this.track.id) {
+        // Stop playback if this track is playing
+        this.audioService.stop();
+      }
+
       await this.audioManager.updateTrack(this.track.id, this.editedTrack);
       this.track = await this.audioManager.getTrackById(this.track.id);
       this.isEditing = false;
@@ -65,6 +84,15 @@ export class TrackDetailsComponent implements OnInit, OnDestroy {
 
   async deleteTrack() {
     if (this.track && confirm('Are you sure you want to delete this track?')) {
+      // Check if this track is currently playing
+      const currentTrack = await this.audioService.currentTrack$
+        .pipe(take(1))
+        .toPromise();
+      if (currentTrack?.id === this.track.id) {
+        // Stop playback if this track is playing
+        this.audioService.stop();
+      }
+
       await this.audioManager.deleteTrack(this.track.id);
       this.router.navigate(['/tracks']);
     }
@@ -84,10 +112,9 @@ export class TrackDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async playTrack() {
-    if (this.track) {
-      await this.audioService.playTrack(this.track);
-    }
+  playTrack(track: Track) {
+    if (!track) return;
+    this.store.dispatch(AudioActions.loadAudioFile({ track }));
   }
 
   ngOnDestroy() {

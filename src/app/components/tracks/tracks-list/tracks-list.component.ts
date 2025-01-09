@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { SearchTrackComponent } from '../search-track/search-track.component';
 import { Track, MusicCategory } from '../../../models/audio.models';
 import { ModalService } from '../../../services/modal.service';
-import { AudioManagerService } from '../../../services/audio-manager.service';
+import { AppState } from '../../../store/app.state';
+import * as AudioActions from '../../../store/audio/audio.actions';
 import { AudioService } from '../../../services/audio.service';
 
 @Component({
@@ -14,70 +17,56 @@ import { AudioService } from '../../../services/audio.service';
   templateUrl: './tracks-list.component.html',
 })
 export class TracksListComponent implements OnInit {
-  tracks: Track[] = [];
-  filteredTracks: Track[] = [];
+  tracks$: Observable<Track[]>;
+  loading$: Observable<boolean>;
   categories = Object.values(MusicCategory);
   selectedCategory: string = 'all';
-  searchTerm: string = '';
+  isDropdownOpen = false;
 
   constructor(
     private modalService: ModalService,
-    private audioManager: AudioManagerService,
+    private store: Store<AppState>,
     private audioService: AudioService
-  ) {}
+  ) {
+    this.tracks$ = this.store.select((state) => state.audio.filteredTracks);
+    this.loading$ = this.store.select((state) => state.audio.loading);
+  }
 
   ngOnInit() {
-    this.loadTracks();
-    // Subscribe to track updates
-    this.audioManager.tracks$.subscribe((tracks) => {
-      this.tracks = tracks;
-      this.filterTracks();
-    });
-  }
-
-  async loadTracks() {
-    await this.audioManager.getAllTracks();
-  }
-
-  playTrack(track: Track) {
-    this.audioService.playTrack(track);
-  }
-
-  filterTracks() {
-    let filtered =
-      this.selectedCategory === 'all'
-        ? this.tracks
-        : this.tracks.filter(
-            (track) =>
-              track.category.toLowerCase() ===
-              this.selectedCategory.toLowerCase()
-          );
-
-    if (this.searchTerm) {
-      const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (track) =>
-          track.title.toLowerCase().includes(search) ||
-          track.artist.toLowerCase().includes(search) ||
-          (track.description &&
-            track.description.toLowerCase().includes(search))
-      );
-    }
-
-    this.filteredTracks = filtered;
+    this.store.dispatch(AudioActions.loadTracks());
   }
 
   onCategoryChange(category: string) {
     this.selectedCategory = category;
-    this.filterTracks();
+    this.store.dispatch(AudioActions.filterByCategory({ category }));
   }
 
-  onSearch(term: string) {
-    this.searchTerm = term;
-    this.filterTracks();
+  async playTrack(track: Track) {
+    if (!track) return;
+
+    try {
+      await this.audioService.playTrack(track);
+      this.store.dispatch(AudioActions.playTrack({ track }));
+    } catch (error) {
+      console.error('Error playing track:', error);
+    }
   }
 
   openUploadModal() {
     this.modalService.open();
+  }
+
+  toggleFavorite(track: Track, event: Event) {
+    event.stopPropagation();
+    this.store.dispatch(AudioActions.toggleFavorite({ trackId: track.id }));
+  }
+
+  onSearch(searchTerm: string) {
+    this.store.dispatch(AudioActions.searchTracks({ term: searchTerm }));
+  }
+
+  onCategorySelect(category: string) {
+    this.onCategoryChange(category);
+    this.isDropdownOpen = false;
   }
 }

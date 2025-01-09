@@ -1,0 +1,88 @@
+<div class="w-full min-h-screen bg-[#dad7cd] p-5">
+  <h1 class="text-4xl font-bold text-black font-mono mb-8">Your Favorites</h1>
+
+  <div
+    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"
+  >
+    @if (favoriteTracks$ | async; as tracks) { @if (tracks.length) { @for (track
+    of tracks; track track.id) {
+    <div class="bg-gray-900 shadow-lg rounded-lg overflow-hidden">
+      <div class="group relative aspect-square">
+        <img
+          [src]="track.imageUrl || 'assets/default-album.png'"
+          [alt]="track.title"
+          class="w-full h-full object-cover rounded-[10%]"
+        />
+        <div
+          class="absolute bg-black rounded-[10%] bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly"
+        >
+          <button
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+            (click)="removeFromFavorites(track)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="text-red-500"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+              />
+            </svg>
+          </button>
+
+          <button
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+            (click)="playTrack(track)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              fill="currentColor"
+              class="bi bi-play-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
+              />
+            </svg>
+          </button>
+
+          <a
+            [routerLink]="['/tracks', track.id]"
+            class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="bi bi-three-dots"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="p-3">
+        <h3 class="text-white text-sm font-medium truncate">
+          {{ track.title }}
+        </h3>
+        <p class="text-gray-400 text-sm truncate">{{ track.artist }}</p>
+      </div>
+    </div>
+    } } @else {
+    <div class="col-span-full text-center py-12">
+      <p class="text-gray-600">No favorite tracks yet</p>
+    </div>
+    } }
+  </div>
+</div>
