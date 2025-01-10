@@ -22,6 +22,7 @@ export class TracksListComponent implements OnInit {
   categories = Object.values(MusicCategory);
   selectedCategory: string = 'all';
   isDropdownOpen = false;
+  currentlyPlayingTrackId: string | null = null;
 
   constructor(
     private modalService: ModalService,
@@ -30,6 +31,11 @@ export class TracksListComponent implements OnInit {
   ) {
     this.tracks$ = this.store.select((state) => state.audio.filteredTracks);
     this.loading$ = this.store.select((state) => state.audio.loading);
+    this.store
+      .select((state) => state.audio.currentTrack)
+      .subscribe((track) => {
+        this.currentlyPlayingTrackId = track?.id || null;
+      });
   }
 
   ngOnInit() {
@@ -39,17 +45,6 @@ export class TracksListComponent implements OnInit {
   onCategoryChange(category: string) {
     this.selectedCategory = category;
     this.store.dispatch(AudioActions.filterByCategory({ category }));
-  }
-
-  async playTrack(track: Track) {
-    if (!track) return;
-
-    try {
-      await this.audioService.playTrack(track);
-      this.store.dispatch(AudioActions.playTrack({ track }));
-    } catch (error) {
-      console.error('Error playing track:', error);
-    }
   }
 
   openUploadModal() {
@@ -68,5 +63,14 @@ export class TracksListComponent implements OnInit {
   onCategorySelect(category: string) {
     this.onCategoryChange(category);
     this.isDropdownOpen = false;
+  }
+
+  isCurrentlyPlaying(track: Track): boolean {
+    return this.currentlyPlayingTrackId === track.id;
+  }
+
+  playTrack(track: Track) {
+    if (!track) return;
+    this.store.dispatch(AudioActions.loadAudioFile({ track }));
   }
 }

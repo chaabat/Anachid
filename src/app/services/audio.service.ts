@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  firstValueFrom,
+  Observable,
+  of,
+  take,
+  withLatestFrom,
+  map,
+} from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Track, PlayerStatus } from '../models/audio.models';
 import { AudioManagerService } from './audio-manager.service';
@@ -55,10 +63,10 @@ export class AudioService {
     });
   }
 
-  async playTrack(track: Track): Promise<void> {
-    return new Promise((resolve, reject) => {
+  playTrack(track: Track): Observable<void> {
+    return new Observable((observer) => {
       if (!track.audioUrl) {
-        reject(new Error('No audio URL provided'));
+        observer.error(new Error('No audio URL provided'));
         return;
       }
 
@@ -68,74 +76,72 @@ export class AudioService {
         this.audioElement.currentTime = 0;
       }
 
-      // Set up event listeners before setting source
-      const onCanPlay = () => {
-        this.store.dispatch(setAudioState({ status: PlayerStatus.LOADING }));
-        this.audioElement
-          .play()
-          .then(() => {
-            this.store.dispatch(
-              setAudioState({ status: PlayerStatus.PLAYING })
-            );
-            resolve();
-          })
-          .catch((error) => {
-            console.error('Playback failed:', error);
-            this.store.dispatch(setAudioState({ status: PlayerStatus.ERROR }));
-            reject(error);
-          });
-        this.audioElement.removeEventListener('canplay', onCanPlay);
-      };
-
-      const onError = (error: Event) => {
-        console.error('Audio loading error:', error);
-        this.store.dispatch(setAudioState({ status: PlayerStatus.ERROR }));
-        this.audioElement.removeEventListener('error', onError);
-        reject(error);
-      };
-
       try {
-        this.audioElement.addEventListener('canplay', onCanPlay);
-        this.audioElement.addEventListener('error', onError);
         this.audioElement.src = track.audioUrl;
         this.audioElement.load();
         this.currentTrackSubject.next(track);
+        this.statusSubject.next(PlayerStatus.LOADING);
+
+        this.audioElement
+          .play()
+          .then(() => {
+            this.statusSubject.next(PlayerStatus.PLAYING);
+            observer.next();
+            observer.complete();
+          })
+          .catch((error) => {
+            this.statusSubject.next(PlayerStatus.ERROR);
+            observer.error(error);
+          });
       } catch (error) {
-        onError(new ErrorEvent('error', { error }));
+        this.statusSubject.next(PlayerStatus.ERROR);
+        observer.error(error);
       }
     });
   }
 
-  async playNext() {
-    const tracks = await firstValueFrom(
-      this.store.select((state) => state.audio.tracks)
-    );
-    const currentTrack = await firstValueFrom(this.currentTrack$);
-
-    if (currentTrack && tracks.length > 0) {
-      const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
-      if (currentIndex < tracks.length - 1) {
-        this.store.dispatch(
-          AudioActions.playTrack({ track: tracks[currentIndex + 1] })
-        );
-      }
-    }
+  playNext(): void {
+    this.store
+      .select((state) => state.audio.tracks)
+      .pipe(
+        take(1),
+        withLatestFrom(this.currentTrack$),
+        map(([tracks, currentTrack]) => {
+          if (currentTrack && tracks.length > 0) {
+            const currentIndex = tracks.findIndex(
+              (t) => t.id === currentTrack.id
+            );
+            if (currentIndex < tracks.length - 1) {
+              this.store.dispatch(
+                AudioActions.playTrack({ track: tracks[currentIndex + 1] })
+              );
+            }
+          }
+        })
+      )
+      .subscribe();
   }
 
-  async playPrevious() {
-    const tracks = await firstValueFrom(
-      this.store.select((state) => state.audio.tracks)
-    );
-    const currentTrack = await firstValueFrom(this.currentTrack$);
-
-    if (currentTrack && tracks.length > 0) {
-      const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
-      if (currentIndex > 0) {
-        this.store.dispatch(
-          AudioActions.playTrack({ track: tracks[currentIndex - 1] })
-        );
-      }
-    }
+  playPrevious(): void {
+    this.store
+      .select((state) => state.audio.tracks)
+      .pipe(
+        take(1),
+        withLatestFrom(this.currentTrack$),
+        map(([tracks, currentTrack]) => {
+          if (currentTrack && tracks.length > 0) {
+            const currentIndex = tracks.findIndex(
+              (t) => t.id === currentTrack.id
+            );
+            if (currentIndex > 0) {
+              this.store.dispatch(
+                AudioActions.playTrack({ track: tracks[currentIndex - 1] })
+              );
+            }
+          }
+        })
+      )
+      .subscribe();
   }
 
   pause() {
@@ -144,8 +150,15 @@ export class AudioService {
   }
 
   resume() {
-    this.audioElement.play();
-    this.statusSubject.next(PlayerStatus.PLAYING);
+    this.audioElement
+      .play()
+      .then(() => {
+        this.statusSubject.next(PlayerStatus.PLAYING);
+      })
+      .catch((error) => {
+        this.statusSubject.next(PlayerStatus.ERROR);
+        console.error('Resume failed:', error);
+      });
   }
 
   stop() {

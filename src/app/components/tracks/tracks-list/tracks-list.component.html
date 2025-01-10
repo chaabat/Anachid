@@ -1,9 +1,9 @@
 <div class="w-full grid min-h-screen bg-[#dad7cd] p-5">
-  <h1
+  <!-- <h1
     class="text-4xl sm:text-5xl md:text-7xl font-bold text-black font-mono mb-8"
   >
     Made for you
-  </h1>
+  </h1> -->
 
   <div class="flex items-center gap-4 mb-8">
     <!-- Search Bar -->
@@ -91,14 +91,14 @@
     </div>
   </div>
 
-  <!-- Tracks Grid -->
+  <!-- Tracks Grid - adjusted column widths -->
   <section
-    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
   >
     @if (tracks$ | async; as tracks) { @if (tracks.length) { @for (track of
     tracks; track track.id) {
     <div class="overflow-hidden">
-      <div class="group relative aspect-square">
+      <div class="group relative" style="aspect-ratio: 3/4">
         <img
           [src]="track.imageUrl || 'assets/default-album.png'"
           [alt]="track.title"
