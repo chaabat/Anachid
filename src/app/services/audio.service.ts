@@ -100,48 +100,30 @@ export class AudioService {
     });
   }
 
-  playNext(): void {
-    this.store
-      .select((state) => state.audio.tracks)
-      .pipe(
-        take(1),
-        withLatestFrom(this.currentTrack$),
-        map(([tracks, currentTrack]) => {
-          if (currentTrack && tracks.length > 0) {
-            const currentIndex = tracks.findIndex(
-              (t) => t.id === currentTrack.id
-            );
-            if (currentIndex < tracks.length - 1) {
-              this.store.dispatch(
-                AudioActions.playTrack({ track: tracks[currentIndex + 1] })
-              );
-            }
-          }
-        })
-      )
-      .subscribe();
+  playNext(tracks: Track[], currentTrack: Track): Track | null {
+    if (!currentTrack || !tracks.length) {
+      return null;
+    }
+
+    const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
+    if (currentIndex === -1 || currentIndex >= tracks.length - 1) {
+      return null;
+    }
+
+    return tracks[currentIndex + 1];
   }
 
-  playPrevious(): void {
-    this.store
-      .select((state) => state.audio.tracks)
-      .pipe(
-        take(1),
-        withLatestFrom(this.currentTrack$),
-        map(([tracks, currentTrack]) => {
-          if (currentTrack && tracks.length > 0) {
-            const currentIndex = tracks.findIndex(
-              (t) => t.id === currentTrack.id
-            );
-            if (currentIndex > 0) {
-              this.store.dispatch(
-                AudioActions.playTrack({ track: tracks[currentIndex - 1] })
-              );
-            }
-          }
-        })
-      )
-      .subscribe();
+  playPrevious(tracks: Track[], currentTrack: Track): Track | null {
+    if (!currentTrack || !tracks.length) {
+      return null;
+    }
+
+    const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
+    if (currentIndex <= 0) {
+      return null;
+    }
+
+    return tracks[currentIndex - 1];
   }
 
   pause() {

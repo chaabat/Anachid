@@ -125,4 +125,21 @@ export const resumeTrackFailure = createAction(
 );
 
 export const playNext = createAction('[Audio] Play Next');
+export const playNextSuccess = createAction(
+  '[Audio] Play Next Success',
+  props<{ track: Track }>()
+);
+export const playNextFailure = createAction(
+  '[Audio] Play Next Failure',
+  props<{ error: string }>()
+);
+
 export const playPrevious = createAction('[Audio] Play Previous');
+export const playPreviousSuccess = createAction(
+  '[Audio] Play Previous Success',
+  props<{ track: Track }>()
+);
+export const playPreviousFailure = createAction(
+  '[Audio] Play Previous Failure',
+  props<{ error: string }>()
+);

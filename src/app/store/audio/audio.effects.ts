@@ -7,6 +7,8 @@ import { AudioService } from '../../services/audio.service';
 import * as AudioActions from './audio.actions';
 import { Track } from '../../models/audio.models';
 import { IndexedDBService } from '../../services/indexed-db.service';
+import { Store } from '@ngrx/store';
+import { withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class AudioEffects {
@@ -150,10 +152,74 @@ export class AudioEffects {
     )
   );
 
+  playNext$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AudioActions.playNext),
+      withLatestFrom(
+        this.store.select((state) => state.audio.tracks),
+        this.store.select((state) => state.audio.currentTrack)
+      ),
+      mergeMap(([_, tracks, currentTrack]) => {
+        if (!currentTrack) {
+          return of(
+            AudioActions.playNextFailure({
+              error: 'No track playing',
+            })
+          );
+        }
+
+        const nextTrack = this.audioService.playNext(tracks, currentTrack);
+        if (!nextTrack) {
+          return of(
+            AudioActions.playNextFailure({
+              error: 'No next track available',
+            })
+          );
+        }
+
+        return of(AudioActions.playTrack({ track: nextTrack }));
+      })
+    )
+  );
+
+  playPrevious$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AudioActions.playPrevious),
+      withLatestFrom(
+        this.store.select((state) => state.audio.tracks),
+        this.store.select((state) => state.audio.currentTrack)
+      ),
+      mergeMap(([_, tracks, currentTrack]) => {
+        if (!currentTrack) {
+          return of(
+            AudioActions.playPreviousFailure({
+              error: 'No track playing',
+            })
+          );
+        }
+
+        const previousTrack = this.audioService.playPrevious(
+          tracks,
+          currentTrack
+        );
+        if (!previousTrack) {
+          return of(
+            AudioActions.playPreviousFailure({
+              error: 'No previous track available',
+            })
+          );
+        }
+
+        return of(AudioActions.playTrack({ track: previousTrack }));
+      })
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private audioManager: AudioManagerService,
     private audioService: AudioService,
-    private indexedDB: IndexedDBService
+    private indexedDB: IndexedDBService,
+    private store: Store
   ) {}
 }

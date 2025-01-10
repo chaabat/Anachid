@@ -23,6 +23,7 @@ export class TracksListComponent implements OnInit {
   selectedCategory: string = 'all';
   isDropdownOpen = false;
   currentlyPlayingTrackId: string | null = null;
+  private tracksList: Track[] = [];
 
   constructor(
     private modalService: ModalService,
@@ -36,6 +37,10 @@ export class TracksListComponent implements OnInit {
       .subscribe((track) => {
         this.currentlyPlayingTrackId = track?.id || null;
       });
+
+    this.tracks$.subscribe((tracks) => {
+      this.tracksList = tracks;
+    });
   }
 
   ngOnInit() {
@@ -73,4 +78,5 @@ export class TracksListComponent implements OnInit {
     if (!track) return;
     this.store.dispatch(AudioActions.loadAudioFile({ track }));
   }
+
 }
