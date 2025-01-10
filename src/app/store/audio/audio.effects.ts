@@ -9,6 +9,7 @@ import { Track } from '../../models/audio.models';
 import { IndexedDBService } from '../../services/indexed-db.service';
 import { Store } from '@ngrx/store';
 import { withLatestFrom } from 'rxjs/operators';
+import { AppState } from '../app.state';
 
 @Injectable()
 export class AudioEffects {
@@ -156,28 +157,24 @@ export class AudioEffects {
     this.actions$.pipe(
       ofType(AudioActions.playNext),
       withLatestFrom(
-        this.store.select((state) => state.audio.tracks),
-        this.store.select((state) => state.audio.currentTrack)
+        this.store.select((state: AppState) => state.audio.tracks),
+        this.store.select((state: AppState) => state.audio.currentTrack)
       ),
       mergeMap(([_, tracks, currentTrack]) => {
         if (!currentTrack) {
           return of(
-            AudioActions.playNextFailure({
-              error: 'No track playing',
-            })
+            AudioActions.playNextFailure({ error: 'No track playing' })
           );
         }
 
         const nextTrack = this.audioService.playNext(tracks, currentTrack);
         if (!nextTrack) {
           return of(
-            AudioActions.playNextFailure({
-              error: 'No next track available',
-            })
+            AudioActions.playNextFailure({ error: 'No next track available' })
           );
         }
 
-        return of(AudioActions.playTrack({ track: nextTrack }));
+        return of(AudioActions.loadAudioFile({ track: nextTrack }));
       })
     )
   );
@@ -186,15 +183,13 @@ export class AudioEffects {
     this.actions$.pipe(
       ofType(AudioActions.playPrevious),
       withLatestFrom(
-        this.store.select((state) => state.audio.tracks),
-        this.store.select((state) => state.audio.currentTrack)
+        this.store.select((state: AppState) => state.audio.tracks),
+        this.store.select((state: AppState) => state.audio.currentTrack)
       ),
       mergeMap(([_, tracks, currentTrack]) => {
         if (!currentTrack) {
           return of(
-            AudioActions.playPreviousFailure({
-              error: 'No track playing',
-            })
+            AudioActions.playPreviousFailure({ error: 'No track playing' })
           );
         }
 
@@ -210,7 +205,7 @@ export class AudioEffects {
           );
         }
 
-        return of(AudioActions.playTrack({ track: previousTrack }));
+        return of(AudioActions.loadAudioFile({ track: previousTrack }));
       })
     )
   );
@@ -220,6 +215,6 @@ export class AudioEffects {
     private audioManager: AudioManagerService,
     private audioService: AudioService,
     private indexedDB: IndexedDBService,
-    private store: Store
+    private store: Store<AppState>
   ) {}
 }
